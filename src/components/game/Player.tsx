@@ -1,8 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useSphere } from '@react-three/cannon';
-import { Vector3, Mesh } from 'three';
+import { Vector3 } from 'three';
 import { useGameStore } from '../../state/useGameStore';
+import { BudMesh } from './BudMesh';
 
 interface PlayerProps {
     id: 1 | 2;
@@ -35,8 +36,6 @@ export const Player: React.FC<PlayerProps> = ({ id, color, initialPosition, inpu
         const speed = baseSpeed * speedBuff;
 
         // Apply velocity based on input
-        // Using api.velocity.set is direct and works well for character controllers
-        // We set X and Z from input, and keep Y from the physics current velocity
         api.velocity.set(input.x * speed, velocity.current[1], -input.y * speed);
 
         // Sync position to global state for distance calculation
@@ -48,17 +47,16 @@ export const Player: React.FC<PlayerProps> = ({ id, color, initialPosition, inpu
     });
 
     return (
-        <mesh ref={ref as React.Ref<Mesh>} castShadow>
-            <sphereGeometry args={[0.5, 32, 32]} />
-            <meshStandardMaterial color={color} roughness={0.3} metalness={0.2} />
+        <group ref={ref as any}>
+            <BudMesh color={color} input={input} />
 
             {/* Soul Link Glow */}
             {harmonyLevel > 80 && (
-                <mesh scale={[1.2, 1.2, 1.2]}>
+                <mesh scale={[1.4, 1.4, 1.4]} position={[0, 0.2, 0]}>
                     <sphereGeometry args={[0.5, 32, 32]} />
                     <meshBasicMaterial color={color} transparent opacity={0.3} />
                 </mesh>
             )}
-        </mesh>
+        </group>
     );
 };

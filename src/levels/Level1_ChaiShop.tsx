@@ -3,6 +3,7 @@ import { useBox, usePlane } from '@react-three/cannon';
 import { Collectible } from '../components/game/Collectible';
 import { SafeZone } from '../components/game/SafeZone';
 import { MiniGameTrigger } from '../components/game/MiniGameTrigger';
+import { WorldLabel } from '../components/game/WorldLabel';
 
 const Desk = ({ position, args }: { position: [number, number, number], args: [number, number, number] }) => {
     const [ref] = useBox(() => ({ type: 'Static', position, args }));
@@ -46,9 +47,11 @@ export const Level1_ChaiShop: React.FC = () => {
 
             {/* Safe Zones */}
             <SafeZone position={[0, 0.5, 2]} />
+            <WorldLabel text="Rest Here & Save Time" position={[0, 2, 2]} color="#4fc3f7" />
 
             {/* Mini-Games */}
             <MiniGameTrigger type="sipOff" position={[0, 0.5, -8]} />
+            <WorldLabel text="Sip-Off Challenge!" position={[0, 2.5, -8]} color="#ff9966" />
 
 
             {/* Warm Cozy Lighting */}
