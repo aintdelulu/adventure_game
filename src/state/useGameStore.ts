@@ -1,88 +1,65 @@
 import { create } from 'zustand';
 
-interface GameState {
-  // Harmony Engine
-  harmonyLevel: number; // 0 to 100
-  distance: number;
-  soulLinkActive: boolean;
-
-  // Shared Resources
-  qualityTime: number; // Ticking clock in seconds
-  financialStability: number;
+export interface GameState {
+  // Stats
+  focusLevel: number; // Replaces Harmony for single player
+  qualityTime: number;
   xp: number;
   level: number;
-  sharedVault: number;
   teaLeaves: number;
   pearls: number;
 
-  // Scene State
+  // Scene & Character State
   scene: 'landing' | 'playing';
+  selectedCharacter: 'edgar' | 'kyla' | null;
 
-  // Player States
-  player1Position: [number, number, number];
-  player2Position: [number, number, number];
-  compliment1: boolean;
-  compliment2: boolean;
-  comboActive: boolean;
+  // Player State
+  playerPosition: [number, number, number];
+  isInteracting: boolean;
 
   // Mini-game State
   miniGameActive: 'sipOff' | null;
-  sipProgress: [number, number]; // [player1, player2]
-  brainFreeze: [number, number]; // timers per player
+  sipProgress: number;
+  brainFreeze: number;
 
   // Actions
   setScene: (scene: 'landing' | 'playing') => void;
-  updateHarmony: (distance: number) => void;
+  setCharacter: (char: 'edgar' | 'kyla') => void;
+  updateFocus: (delta: number) => void;
   addXP: (amount: number) => void;
-  addFinancialStability: (amount: number) => void;
-  tickQualityTime: (delta: number) => void;
-  replenishQualityTime: (amount: number) => void;
-  updatePlayerPosition: (player: 1 | 2, position: [number, number, number]) => void;
-  triggerSoulLink: () => void;
+  updatePlayerPosition: (pos: [number, number, number]) => void;
+  setInteracting: (val: boolean) => void;
   collectItem: (type: 'leaf' | 'pearl') => void;
-  setComplimenting: (player: 1 | 2, active: boolean) => void;
+  replenishTime: (amount: number) => void;
   triggerMiniGame: (type: 'sipOff' | null) => void;
-  sip: (player: 1 | 2) => void;
+  sip: () => void;
   tickMiniGame: (delta: number) => void;
+  tickGame: (delta: number) => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
-  harmonyLevel: 0,
-  distance: 0,
-  soulLinkActive: false,
+  focusLevel: 50,
   qualityTime: 300,
-  financialStability: 0,
   xp: 0,
   level: 1,
-  sharedVault: 0,
   teaLeaves: 0,
   pearls: 0,
-  player1Position: [0, 0, 0],
-  player2Position: [0, 0, 0],
-  compliment1: false,
-  compliment2: false,
-  comboActive: false,
-  miniGameActive: null,
-  sipProgress: [0, 0],
-  brainFreeze: [0, 0],
   scene: 'landing',
+  selectedCharacter: null,
+  playerPosition: [0, 0, 0],
+  isInteracting: false,
+  miniGameActive: null,
+  sipProgress: 0,
+  brainFreeze: 0,
 
   setScene: (scene) => set({ scene }),
+  setCharacter: (selectedCharacter) => set({ selectedCharacter }),
 
-  updateHarmony: (distance: number) => set((state) => {
-    const isClose = distance < 5;
-    const newHarmony = isClose
-      ? Math.min(100, state.harmonyLevel + 0.1)
-      : Math.max(0, state.harmonyLevel - 0.2);
+  updateFocus: (delta) => set((state) => ({
+    focusLevel: Math.max(0, Math.min(100, state.focusLevel + delta))
+  })),
 
-    return {
-      distance,
-      harmonyLevel: newHarmony,
-      soulLinkActive: newHarmony === 100
-    };
-  }),
-
-  addXP: (amount: number) => set((state) => {
+  addXP: (amount) => set((state) => {
     const newXP = state.xp + amount;
     const nextLevelXP = state.level * 1000;
     if (newXP >= nextLevelXP) {
@@ -91,71 +68,41 @@ export const useGameStore = create<GameState>((set) => ({
     return { xp: newXP };
   }),
 
-  addFinancialStability: (amount: number) => set((state) => ({
-    financialStability: state.financialStability + amount,
-    sharedVault: state.sharedVault + amount
+  updatePlayerPosition: (pos) => set({ playerPosition: pos }),
+  setInteracting: (isInteracting) => set({ isInteracting }),
+
+  collectItem: (type) => set((state) => ({
+    teaLeaves: type === 'leaf' ? state.teaLeaves + 1 : state.teaLeaves,
+    pearls: type === 'pearl' ? state.pearls + 1 : state.pearls,
+    xp: state.xp + 50
   })),
 
-  tickQualityTime: (delta: number) => set((state) => ({
-    qualityTime: Math.max(0, state.qualityTime - delta)
+  replenishTime: (amount) => set((state) => ({
+    qualityTime: Math.min(300, state.qualityTime + amount)
   })),
-
-  replenishQualityTime: (amount: number) => set((state) => ({
-    qualityTime: Math.min(600, state.qualityTime + amount)
-  })),
-
-  updatePlayerPosition: (player, position) => set(() => {
-    if (player === 1) return { player1Position: position };
-    return { player2Position: position };
-  }),
-
-  triggerSoulLink: () => set((state) => {
-    if (state.harmonyLevel === 100) {
-      return { player2Position: [...state.player1Position] };
-    }
-    return state;
-  }),
-
-  collectItem: (type) => set((state) => {
-    if (type === 'leaf') return { teaLeaves: state.teaLeaves + 1 };
-    return { pearls: state.pearls + 1 };
-  }),
-
-  setComplimenting: (player, active) => set((state) => {
-    const key = player === 1 ? 'compliment1' : 'compliment2';
-    const newState = { ...state, [key]: active };
-    const bothComplimenting = (player === 1 ? active : state.compliment1) && (player === 2 ? active : state.compliment2);
-
-    if (bothComplimenting && !state.comboActive) {
-      setTimeout(() => set({ comboActive: false }), 2000);
-      return { ...newState, comboActive: true };
-    }
-
-    return newState;
-  }),
 
   triggerMiniGame: (type) => set({
     miniGameActive: type,
-    sipProgress: [0, 0],
-    brainFreeze: [0, 0]
+    sipProgress: 0,
+    brainFreeze: 0
   }),
 
-  sip: (player) => set((state) => {
-    if (state.brainFreeze[player - 1] > 0) return state;
-
-    const newProgress = [...state.sipProgress] as [number, number];
-    newProgress[player - 1] = Math.min(100, newProgress[player - 1] + 5);
-
-    const rand = Math.random();
-    const newFreeze = [...state.brainFreeze] as [number, number];
-    if (rand < 0.15) {
-      newFreeze[player - 1] = 3;
-    }
-
+  sip: () => set((state) => {
+    if (state.brainFreeze > 0) return state;
+    const newProgress = Math.min(100, state.sipProgress + 5);
+    let newFreeze = state.brainFreeze;
+    if (Math.random() > 0.8) newFreeze = 2; // 2 seconds brain freeze
     return { sipProgress: newProgress, brainFreeze: newFreeze };
   }),
 
   tickMiniGame: (delta) => set((state) => ({
-    brainFreeze: state.brainFreeze.map(t => Math.max(0, t - delta)) as [number, number]
+    brainFreeze: Math.max(0, state.brainFreeze - delta)
   })),
+
+  tickGame: (delta) => set((state) => {
+    if (state.scene !== 'playing') return state;
+    return {
+      qualityTime: Math.max(0, state.qualityTime - delta)
+    };
+  })
 }));

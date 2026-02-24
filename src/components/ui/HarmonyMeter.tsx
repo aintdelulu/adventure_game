@@ -2,17 +2,17 @@ import React from 'react';
 import { useGameStore } from '../../state/useGameStore';
 
 export const HarmonyMeter: React.FC = () => {
-    const harmonyLevel = useGameStore((state) => state.harmonyLevel);
-    const soulLinkActive = useGameStore((state) => state.soulLinkActive);
+    const focusLevel = useGameStore((state) => state.focusLevel);
     const qualityTime = useGameStore((state) => state.qualityTime);
     const xp = useGameStore((state) => state.xp);
     const level = useGameStore((state) => state.level);
     const teaLeaves = useGameStore((state) => state.teaLeaves);
     const pearls = useGameStore((state) => state.pearls);
+    const selectedCharacter = useGameStore((state) => state.selectedCharacter);
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
+        const secs = Math.floor(seconds % 60);
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
@@ -29,7 +29,7 @@ export const HarmonyMeter: React.FC = () => {
             zIndex: 100,
             pointerEvents: 'none',
         }}>
-            {/* Harmony Bar Container */}
+            {/* Focus Bar Container */}
             <div className="glass" style={{
                 width: '100%',
                 height: '14px',
@@ -37,23 +37,21 @@ export const HarmonyMeter: React.FC = () => {
                 overflow: 'hidden',
                 position: 'relative',
                 border: '1px solid rgba(255,255,255,0.3)',
-                boxShadow: `0 0 20px rgba(255, 94, 98, ${harmonyLevel / 100})`
+                boxShadow: `0 0 20px rgba(255, 94, 98, ${focusLevel / 100})`
             }}>
                 <div style={{
-                    width: `${harmonyLevel}%`,
+                    width: `${focusLevel}%`,
                     height: '100%',
                     background: 'var(--bg-sunset)',
                     transition: 'width 0.3s ease-out',
                     boxShadow: 'inset 0 0 10px rgba(255,255,255,0.5)',
                     position: 'relative'
                 }}>
-                    {/* Pulse effect when high harmony */}
-                    {harmonyLevel > 80 && (
+                    {focusLevel > 80 && (
                         <div style={{
                             position: 'absolute',
                             top: 0, right: 0, bottom: 0, left: 0,
-                            background: 'white',
-                            opacity: 0.3,
+                            background: 'white', opacity: 0.3,
                             animation: 'pulse 1.5s infinite'
                         }} />
                     )}
@@ -65,22 +63,17 @@ export const HarmonyMeter: React.FC = () => {
                 width: '100%',
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center',
                 padding: '0 5px'
             }}>
-                <span style={{
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    color: 'var(--primary)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                }}>
-                    Harmony {Math.round(harmonyLevel)}%
+                <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--primary)', letterSpacing: '2px' }}>
+                    FOCUS MODE
+                </span>
+                <span style={{ fontSize: '11px', fontWeight: 800, color: 'rgba(0,0,0,0.4)' }}>
+                    {selectedCharacter?.toUpperCase() || 'HERO'}
                 </span>
             </div>
 
-            {/* Resources & Status Glass Panel */}
+            {/* Resources Glass Panel */}
             <div className="glass" style={{
                 marginTop: '15px',
                 padding: '10px 20px',
@@ -88,7 +81,6 @@ export const HarmonyMeter: React.FC = () => {
                 display: 'flex',
                 gap: '20px',
                 alignItems: 'center',
-                justifyContent: 'center',
                 border: '1px solid rgba(255,255,255,0.3)',
                 color: 'var(--text-dark)'
             }}>
@@ -114,15 +106,14 @@ export const HarmonyMeter: React.FC = () => {
                 </div>
             </div>
 
-            {/* XP Bar Overlay */}
+            {/* XP Bar */}
             <div style={{
                 marginTop: '10px',
                 width: '150px',
                 height: '4px',
                 background: 'rgba(0, 0, 0, 0.05)',
                 borderRadius: '2px',
-                overflow: 'hidden',
-                border: '1px solid rgba(255,255,255,0.2)'
+                overflow: 'hidden'
             }}>
                 <div style={{
                     width: `${(xp / (level * 1000)) * 100}%`,
@@ -132,33 +123,11 @@ export const HarmonyMeter: React.FC = () => {
                 }} />
             </div>
 
-            {soulLinkActive && (
-                <div
-                    style={{
-                        marginTop: '15px',
-                        padding: '8px 25px',
-                        background: 'var(--bg-sunset)',
-                        color: 'white',
-                        fontWeight: 700,
-                        borderRadius: '20px',
-                        fontSize: '14px',
-                        boxShadow: '0 0 20px rgba(255, 94, 98, 0.6)',
-                        animation: 'bounce 1s infinite'
-                    }}
-                >
-                    ✨ SOUL LINK ACTIVE ✨
-                </div>
-            )}
-
             <style>{`
                 @keyframes pulse {
                     0% { opacity: 0.1; }
                     50% { opacity: 0.4; }
                     100% { opacity: 0.1; }
-                }
-                @keyframes bounce {
-                    0%, 100% { transform: translateY(0); }
-                    50% { transform: translateY(-5px); }
                 }
             `}</style>
         </div>

@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useGameStore } from '../../state/useGameStore';
 
 export const InstructionsOverlay: React.FC = () => {
     const [visible, setVisible] = useState(true);
+    const selectedCharacter = useGameStore((state) => state.selectedCharacter);
+    const name = selectedCharacter === 'edgar' ? 'Edgar' : 'Kyla';
 
     return (
         <AnimatePresence>
@@ -41,9 +44,9 @@ export const InstructionsOverlay: React.FC = () => {
                             boxShadow: '0 20px 50px rgba(0,0,0,0.1)'
                         }}
                     >
-                        <h2 className="text-gradient" style={{ fontSize: '32px', marginBottom: '10px' }}>Your Quest Awaits</h2>
+                        <h2 className="text-gradient" style={{ fontSize: '32px', marginBottom: '10px' }}>Welcome, {name}!</h2>
                         <p style={{ color: 'rgba(0,0,0,0.6)', marginBottom: '30px', fontWeight: 500 }}>
-                            Success isn't measured by points, but by the legacy you build together.
+                            Your solo journey to master the art of Chai begins now.
                         </p>
 
                         <div style={{
@@ -53,9 +56,9 @@ export const InstructionsOverlay: React.FC = () => {
                             marginBottom: '40px'
                         }}>
                             {[
-                                { icon: '🤝', label: 'Stay Close', sub: 'Gain Harmony' },
-                                { icon: '🌿', label: 'Gather', sub: 'Brew Chai' },
-                                { icon: '⏳', label: 'Rest', sub: 'Save Time' }
+                                { icon: '🧘', label: 'Focus', sub: 'Move Fast' },
+                                { icon: '🌿', label: 'Gather', sub: 'Collect Items' },
+                                { icon: '⌛', label: 'Rest', sub: 'Save Time' }
                             ].map((item, i) => (
                                 <div key={i} style={{
                                     background: 'rgba(255,255,255,0.5)',
@@ -85,7 +88,7 @@ export const InstructionsOverlay: React.FC = () => {
                                 width: '100%'
                             }}
                         >
-                            BEGIN JOURNEY
+                            START ADVENTURE
                         </button>
                     </motion.div>
                 </motion.div>

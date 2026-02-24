@@ -6,9 +6,8 @@ import { Vector3 } from 'three';
 import { useGameStore } from '../../state/useGameStore';
 
 export const SafeZone: React.FC<{ position: [number, number, number] }> = ({ position }) => {
-    const p1Pos = useGameStore((state) => state.player1Position);
-    const p2Pos = useGameStore((state) => state.player2Position);
-    const replenishQualityTime = useGameStore((state) => state.replenishQualityTime);
+    const playerPos = useGameStore((state) => state.playerPosition);
+    const replenishTime = useGameStore((state) => state.replenishTime);
 
     const [active, setActive] = useState(false);
     const [timer, setTimer] = useState(0);
@@ -21,19 +20,17 @@ export const SafeZone: React.FC<{ position: [number, number, number] }> = ({ pos
     }));
 
     useFrame((_, delta) => {
-        const v1 = new Vector3(...p1Pos);
-        const v2 = new Vector3(...p2Pos);
+        const v1 = new Vector3(...playerPos);
         const benchPos = new Vector3(...position);
 
-        const p1Near = v1.distanceTo(benchPos) < 2.5;
-        const p2Near = v2.distanceTo(benchPos) < 2.5;
+        const isNear = v1.distanceTo(benchPos) < 2.5;
 
-        if (p1Near && p2Near) {
+        if (isNear) {
             setActive(true);
             setTimer((prev) => {
                 const next = prev + delta;
                 if (next >= 5) {
-                    replenishQualityTime(30); // Add 30 seconds
+                    replenishTime(30); // Add 30 seconds
                     return 0; // Reset for next replenishment
                 }
                 return next;

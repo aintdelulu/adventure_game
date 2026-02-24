@@ -8,6 +8,7 @@ export const SipOffUI: React.FC = () => {
     const sip = useGameStore((state) => state.sip);
     const tickMiniGame = useGameStore((state) => state.tickMiniGame);
     const triggerMiniGame = useGameStore((state) => state.triggerMiniGame);
+    const selectedCharacter = useGameStore((state) => state.selectedCharacter);
 
     useEffect(() => {
         let interval: any;
@@ -21,7 +22,8 @@ export const SipOffUI: React.FC = () => {
 
     if (miniGameActive !== 'sipOff') return null;
 
-    const winner = sipProgress[0] >= 100 ? 1 : sipProgress[1] >= 100 ? 2 : null;
+    const isFinished = sipProgress >= 100;
+    const name = selectedCharacter === 'edgar' ? 'Edgar' : 'Kyla';
 
     return (
         <div style={{
@@ -40,83 +42,61 @@ export const SipOffUI: React.FC = () => {
             color: '#fff',
             padding: '20px'
         }}>
-            <h2 style={{ fontSize: '32px', marginBottom: '40px', color: '#feb47b' }}>🧋 THE SIP-OFF! 🧋</h2>
+            <h2 style={{ fontSize: '32px', marginBottom: '40px', color: '#feb47b' }}>🧋 THE SOLO SIP-OFF! 🧋</h2>
 
-            <div style={{ display: 'flex', gap: '50px', width: '100%', justifyContent: 'center' }}>
-                {/* Player 1 */}
-                <div style={{ textAlign: 'center' }}>
-                    <h3>Player 1</h3>
-                    <div style={{ height: '300px', width: '60px', background: '#333', borderRadius: '30px', position: 'relative', overflow: 'hidden', border: '3px solid #ff5e62' }}>
-                        <div style={{
-                            position: 'absolute',
-                            bottom: 0,
-                            width: '100%',
-                            height: `${sipProgress[0]}%`,
-                            background: '#ff5e62',
-                            transition: 'height 0.2s ease-out'
-                        }} />
-                    </div>
-                    {brainFreeze[0] > 0 && <div style={{ color: '#00f2fe', fontWeight: 'bold', marginTop: '10px' }}>🧊 BRAIN FREEZE!</div>}
-                    <button
-                        onPointerDown={() => sip(1)}
-                        style={{
-                            marginTop: '20px',
-                            padding: '15px 25px',
-                            borderRadius: '30px',
-                            border: 'none',
-                            background: brainFreeze[0] > 0 ? '#666' : '#ff5e62',
-                            color: 'white',
-                            fontWeight: 'bold'
-                        }}
-                    >
-                        SIP!
-                    </button>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <h3>{name}</h3>
+                <div style={{ height: '300px', width: '80px', background: '#333', borderRadius: '40px', position: 'relative', overflow: 'hidden', border: '4px solid var(--primary)' }}>
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        width: '100%',
+                        height: `${sipProgress}%`,
+                        background: 'var(--bg-sunset)',
+                        transition: 'height 0.2s ease-out'
+                    }} />
                 </div>
 
-                {/* Player 2 */}
-                <div style={{ textAlign: 'center' }}>
-                    <h3>Player 2</h3>
-                    <div style={{ height: '300px', width: '60px', background: '#333', borderRadius: '30px', position: 'relative', overflow: 'hidden', border: '3px solid #00f2fe' }}>
-                        <div style={{
-                            position: 'absolute',
-                            bottom: 0,
-                            width: '100%',
-                            height: `${sipProgress[1]}%`,
-                            background: '#00f2fe',
-                            transition: 'height 0.2s ease-out'
-                        }} />
+                {brainFreeze > 0 && (
+                    <div style={{ color: '#4fc3f7', fontStyle: 'italic', fontWeight: 'bold', marginTop: '10px', fontSize: '20px' }}>
+                        🧊 BRAIN FREEZE! 🧊
                     </div>
-                    {brainFreeze[1] > 0 && <div style={{ color: '#00f2fe', fontWeight: 'bold', marginTop: '10px' }}>🧊 BRAIN FREEZE!</div>}
-                    <button
-                        onPointerDown={() => sip(2)}
-                        style={{
-                            marginTop: '20px',
-                            padding: '15px 25px',
-                            borderRadius: '30px',
-                            border: 'none',
-                            background: brainFreeze[1] > 0 ? '#666' : '#00f2fe',
-                            color: 'white',
-                            fontWeight: 'bold'
-                        }}
-                    >
-                        SIP!
-                    </button>
-                </div>
+                )}
+
+                <button
+                    onPointerDown={() => sip()}
+                    style={{
+                        marginTop: '30px',
+                        padding: '20px 50px',
+                        borderRadius: '40px',
+                        border: 'none',
+                        background: brainFreeze > 0 ? '#666' : 'var(--bg-sunset)',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: '24px',
+                        boxShadow: '0 10px 20px rgba(0,0,0,0.3)',
+                        cursor: brainFreeze > 0 ? 'not-allowed' : 'pointer'
+                    }}
+                >
+                    SIP!
+                </button>
             </div>
 
-            {winner && (
+            {isFinished && (
                 <div style={{ marginTop: '40px', textAlign: 'center' }}>
-                    <h1 style={{ color: '#f8b400' }}>P{winner} WINS!</h1>
+                    <h1 style={{ color: '#4fc3f7' }}>CHALLENGE COMPLETE!</h1>
                     <button
                         onClick={() => triggerMiniGame(null)}
-                        style={{ padding: '10px 20px', borderRadius: '20px', background: '#fff', color: '#000', border: 'none', marginTop: '20px', fontWeight: 'bold' }}
+                        style={{ padding: '15px 40px', borderRadius: '30px', background: '#fff', color: '#000', border: 'none', marginTop: '20px', fontWeight: 'bold', cursor: 'pointer' }}
                     >
                         CONTINUE ADVENTURE
                     </button>
                 </div>
             )}
 
-            <p style={{ marginTop: '40px', color: 'rgba(255,255,255,0.5)' }}>Tap rapidly to sip, but watch out for brain freeze!</p>
+            <p style={{ marginTop: '40px', color: 'rgba(255,255,255,0.5)', maxWidth: '400px', textAlign: 'center' }}>
+                Tap rapidly to drink your chai! Watch your pulse. Too fast and you'll get a brain freeze!
+            </p>
         </div>
     );
 };

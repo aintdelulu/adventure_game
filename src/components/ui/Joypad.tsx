@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 interface JoypadProps {
     onMove: (dir: { x: number; y: number }) => void;
     color?: string;
-    side: 'left' | 'right';
+    side: 'left' | 'right' | 'center';
     label?: string;
 }
 
@@ -31,7 +31,7 @@ export const Joypad: React.FC<JoypadProps> = ({ onMove, color = '#f8b400', side,
         const ny = Math.sin(angle) * (limitedDistance / maxRadius);
 
         setPosition({ x: Math.cos(angle) * limitedDistance, y: Math.sin(angle) * limitedDistance });
-        onMove({ x: nx, y: -ny }); // Standardize y for 3D world (forward is -z or +z depending on cam)
+        onMove({ x: nx, y: -ny });
     };
 
     const handlePointerUp = () => {
@@ -48,23 +48,29 @@ export const Joypad: React.FC<JoypadProps> = ({ onMove, color = '#f8b400', side,
         window.addEventListener('pointerup', handlePointerUp);
     };
 
+    // Dynamic positioning
+    const sideStyle: React.CSSProperties = side === 'center'
+        ? { left: '50%', transform: 'translateX(-50%)' }
+        : { [side]: '40px' };
+
     return (
         <div
             style={{
-                position: 'absolute',
+                position: 'fixed',
                 bottom: '40px',
-                [side]: '40px',
+                ...sideStyle,
                 width: '120px',
                 height: '120px',
                 background: 'rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(10px)',
+                backdropFilter: 'blur(12px)',
                 borderRadius: '50%',
                 touchAction: 'none',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-                border: '2px solid rgba(255, 255, 255, 0.1)'
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                zIndex: 1000
             }}
             ref={containerRef}
             onPointerDown={handlePointerDown}
