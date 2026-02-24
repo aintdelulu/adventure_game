@@ -74,11 +74,14 @@ export const Joypad: React.FC<JoypadProps> = ({ onMove, color = '#f8b400', side,
                 style={{
                     width: '50px',
                     height: '50px',
-                    background: color,
+                    background: `radial-gradient(circle at 30% 30%, ${color}, #000)`,
                     borderRadius: '50%',
                     transform: `translate(${position.x}px, ${position.y}px)`,
                     transition: isDragging.current ? 'none' : 'transform 0.1s ease-out',
-                    boxShadow: `0 0 20px ${color}`
+                    boxShadow: isDragging.current
+                        ? `0 0 30px ${color}, inset 0 0 10px rgba(255,255,255,0.5)`
+                        : `0 0 15px ${color}, inset 0 0 5px rgba(255,255,255,0.3)`,
+                    border: '1px solid rgba(255,255,255,0.4)',
                 }}
             />
         </div>

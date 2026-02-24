@@ -1,11 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@400;500;600&display=swap');
+
 :root {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --primary: #ff5e62;
+  --secondary: #ff9966;
+  --accent: #feb47b;
+  --bg-creamy: #fdf5e6;
+  --bg-sunset: linear-gradient(135deg, #ff5e62 0%, #ff9966 50%, #feb47b 100%);
+  --glass: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --text-dark: #2d3436;
+  --text-light: #ffffff;
+
+  font-family: 'Outfit', sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #fdf5e6;
+  color: var(--text-dark);
+  background-color: var(--bg-creamy);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -25,10 +36,26 @@ body {
 }
 
 #root {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
 }
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+.text-gradient {
+  background: var(--bg-sunset);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

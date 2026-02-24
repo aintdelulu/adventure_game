@@ -9,7 +9,7 @@ const Desk = ({ position, args }: { position: [number, number, number], args: [n
     return (
         <mesh ref={ref as any} castShadow>
             <boxGeometry args={args} />
-            <meshStandardMaterial color="#8b4513" />
+            <meshStandardMaterial color="#8b4513" roughness={0.3} metalness={0.1} />
         </mesh>
     );
 };
@@ -19,7 +19,7 @@ const Floor = () => {
     return (
         <mesh ref={ref as any} receiveShadow>
             <planeGeometry args={[50, 50]} />
-            <meshStandardMaterial color="#f5deb3" />
+            <meshStandardMaterial color="#f5deb3" roughness={0.6} metalness={0.05} />
         </mesh>
     );
 };

@@ -15,6 +15,9 @@ interface GameState {
   teaLeaves: number;
   pearls: number;
 
+  // Scene State
+  scene: 'landing' | 'playing';
+
   // Player States
   player1Position: [number, number, number];
   player2Position: [number, number, number];
@@ -28,6 +31,7 @@ interface GameState {
   brainFreeze: [number, number]; // timers per player
 
   // Actions
+  setScene: (scene: 'landing' | 'playing') => void;
   updateHarmony: (distance: number) => void;
   addXP: (amount: number) => void;
   addFinancialStability: (amount: number) => void;
@@ -61,6 +65,9 @@ export const useGameStore = create<GameState>((set) => ({
   miniGameActive: null,
   sipProgress: [0, 0],
   brainFreeze: [0, 0],
+  scene: 'landing',
+
+  setScene: (scene) => set({ scene }),
 
   updateHarmony: (distance: number) => set((state) => {
     const isClose = distance < 5;

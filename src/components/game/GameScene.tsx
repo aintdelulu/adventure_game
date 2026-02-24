@@ -10,6 +10,7 @@ import { Level1_ChaiShop } from '../../levels/Level1_ChaiShop';
 import { ComplimentEffect } from './ComplimentEffect';
 import { useGameStore } from '../../state/useGameStore';
 import { SipOffUI } from '../ui/SipOffUI';
+import { InstructionsOverlay } from '../ui/InstructionsOverlay';
 import { Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 
@@ -82,6 +83,7 @@ export const GameScene: React.FC = () => {
 
             <HarmonyMeter />
             <SipOffUI />
+            <InstructionsOverlay />
 
             {/* Local Co-op Controls */}
             <Joypad

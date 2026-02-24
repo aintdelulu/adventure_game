@@ -15,6 +15,14 @@ The "Creamy Chai Shop" level is fully implemented with:
 - **Physics**: Cannon-es
 - **State**: Zustand
 
+## 🕹️ How to Play
+- **Joysticks**: Move each player independently.
+- **Heart Buttons**: Tap simultaneously for a "Compliment Combo".
+- **Harmony**: Stay close to gain speed and sync buffs.
+- **Goal**: Collect ingredients and complete the "Sip-Off" mini-game.
+
+For more details, see [INSTRUCTIONS.md](./INSTRUCTIONS.md).
+
 ## 📦 Local Development
 1. Clone the repo.
 2. `npm install`
