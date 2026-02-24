@@ -34,7 +34,9 @@ export const Player: React.FC<PlayerProps> = ({ id, color, initialPosition, inpu
         const baseSpeed = 5;
         const speed = baseSpeed * speedBuff;
 
-        // Apply force based on input
+        // Apply velocity based on input
+        // Using api.velocity.set is direct and works well for character controllers
+        // We set X and Z from input, and keep Y from the physics current velocity
         api.velocity.set(input.x * speed, velocity.current[1], -input.y * speed);
 
         // Sync position to global state for distance calculation

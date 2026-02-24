@@ -1,5 +1,5 @@
 import React from 'react';
-import { useBox } from '@react-three/cannon';
+import { useBox, usePlane } from '@react-three/cannon';
 import { Collectible } from '../components/game/Collectible';
 import { SafeZone } from '../components/game/SafeZone';
 import { MiniGameTrigger } from '../components/game/MiniGameTrigger';
@@ -14,16 +14,23 @@ const Desk = ({ position, args }: { position: [number, number, number], args: [n
     );
 };
 
+const Floor = () => {
+    const [ref] = usePlane(() => ({ rotation: [-Math.PI / 2, 0, 0], position: [0, 0, 0] }));
+    return (
+        <mesh ref={ref as any} receiveShadow>
+            <planeGeometry args={[50, 50]} />
+            <meshStandardMaterial color="#f5deb3" />
+        </mesh>
+    );
+};
+
 export const Level1_ChaiShop: React.FC = () => {
     return (
         <>
             <ambientLight intensity={0.5} />
 
             {/* Tea Shop Walls/Floor Details */}
-            <mesh position={[0, 0, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[50, 50]} />
-                <meshStandardMaterial color="#f5deb3" />
-            </mesh>
+            <Floor />
 
             {/* Low-poly Furniture */}
             <Desk position={[-5, 0.5, -5]} args={[2, 1, 1]} />

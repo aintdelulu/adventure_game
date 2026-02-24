@@ -10,6 +10,32 @@ import { Level1_ChaiShop } from '../../levels/Level1_ChaiShop';
 import { ComplimentEffect } from './ComplimentEffect';
 import { useGameStore } from '../../state/useGameStore';
 import { SipOffUI } from '../ui/SipOffUI';
+import { Vector3 } from 'three';
+import { useFrame } from '@react-three/fiber';
+
+const CameraController = () => {
+    const p1 = useGameStore((state) => state.player1Position);
+    const p2 = useGameStore((state) => state.player2Position);
+
+    useFrame((state) => {
+        const midPoint = new Vector3(
+            (p1[0] + p2[0]) / 2,
+            (p1[1] + p2[1]) / 2,
+            (p1[2] + p2[2]) / 2
+        );
+
+        const targetCameraPos = new Vector3(
+            midPoint.x,
+            midPoint.y + 12, // Height
+            midPoint.z + 15  // Distance
+        );
+
+        state.camera.position.lerp(targetCameraPos, 0.1);
+        state.camera.lookAt(midPoint);
+    });
+
+    return null;
+};
 
 export const GameScene: React.FC = () => {
     const [p1Input, setP1Input] = useState({ x: 0, y: 0 });
@@ -19,6 +45,7 @@ export const GameScene: React.FC = () => {
     return (
         <div style={{ width: '100vw', height: '100vh', background: '#fdf5e6' }}>
             <Canvas shadows camera={{ position: [0, 10, 15], fov: 45 }}>
+                <CameraController />
                 <Sky sunPosition={[100, 20, 100]} />
 
                 <Environment preset="sunset" />
